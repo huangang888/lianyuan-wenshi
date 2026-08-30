@@ -107,6 +107,31 @@
     .footer { font-size: 11px; padding: 14px; }
   }
 
+
+  /* ===== 深色模式 ===== */
+  body.dark { background: #1a1f26; color: #d5d8dc; }
+  body.dark header { background: #15283c; }
+  body.dark header p { color: #b9c6d4; }
+  body.dark .searchbox input { background: #232a33; color: #e0e4ea; border-color: #3a4554; }
+  body.dark .searchbox input::placeholder { color: #7a8494; }
+  body.dark .hint { color: #8a94a0; }
+  body.dark .hint b { color: #c9b98a; }
+  body.dark #status { color: #8a94a0; }
+  body.dark .book-block, body.dark .combine-view, body.dark .ai-view, body.dark .summary-view { background: #232a33; border-color: #3a4554; }
+  body.dark .page-item { border-bottom-color: #2f3844; }
+  body.dark .page-item .txt { color: #c9cfd8; }
+  body.dark .page-item mark { background: #6b5a2e; color: #fff; }
+  body.dark .tabs button { background: #2a3340; color: #c9cfd8; border-color: #3a4554; }
+  body.dark .tabs button.active { background: #1F4E78; color: #fff; border-color: #1F4E78; }
+  body.dark .ai-meta, body.dark .summary-view .stats { background: #2a3340; color: #aeb6c2; }
+  body.dark .ai-view h1, body.dark .ai-view h2, body.dark .combine-view h3, body.dark .summary-view h2, body.dark .summary-view h3 { color: #9db8d4; }
+  body.dark .combine-view h2 { color: #9db8d4; }
+  body.dark .empty { color: #8a94a0; }
+  body.dark .footer { color: #666; }
+  body.dark .ai-loading { color: #8a94a0; }
+  body.dark .copybar button { background: #1F4E78; }
+  body.dark .booksrc { color: #8a94a0; }
+
 </style>
 </head>
 <body>
@@ -115,7 +140,10 @@
     <h1>涟源文史知识库</h1>
     <p>输入地名或人名，一键检索全部文史书籍，并按时间、事件脉络整理成文</p>
   </div>
-  <button onclick="openSettings()" style="padding:8px 16px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;cursor:pointer;font-size:14px">API设置</button>
+  <div style="display:flex;gap:8px">
+    <button id="darkBtn" onclick="toggleDark()" style="padding:8px 16px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;cursor:pointer;font-size:14px">深色</button>
+    <button onclick="openSettings()" style="padding:8px 16px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;cursor:pointer;font-size:14px">API设置</button>
+  </div>
 </header>
 <div class="container">
   <div class="searchbox">
@@ -680,6 +708,23 @@ function exportHistory(id) {
 }
 
 // ===== 设置 API Key =====
+function toggleDark() {
+  const dark = document.body.classList.toggle('dark');
+  try { localStorage.setItem('lw_dark', dark ? '1' : '0'); } catch (e) {}
+  const btn = document.getElementById('darkBtn');
+  if (btn) btn.textContent = dark ? '浅色' : '深色';
+}
+
+(function initDark() {
+  let dark = '0';
+  try { dark = localStorage.getItem('lw_dark') || '0'; } catch (e) {}
+  if (dark === '1') {
+    document.body.classList.add('dark');
+    const b = document.getElementById('darkBtn');
+    if (b) b.textContent = '浅色';
+  }
+})();
+
 function openSettings() {
   const cur = getApiKey();
   const masked = cur ? cur.substring(0, 6) + '…' + cur.substring(cur.length - 4) : '（未设置）';
