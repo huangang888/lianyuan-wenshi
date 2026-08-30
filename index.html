@@ -77,6 +77,36 @@
   .copybar button:hover { background: #173a5c; }
   #summaryPlain { display: none; }
   .booksrc { color: #777; font-size: 13px; }
+
+  /* ===== 手机端适配 ===== */
+  @media (max-width: 640px) {
+    header { padding: 14px 16px; }
+    header h1 { font-size: 18px; letter-spacing: 1px; }
+    header p { font-size: 12px; line-height: 1.6; }
+    header button { font-size: 13px; padding: 7px 12px; }
+    .container { padding: 14px; }
+    .searchbox { gap: 8px; margin-bottom: 14px; }
+    .searchbox input { padding: 12px 14px; font-size: 16px; min-width: 0; }
+    .searchbox button { padding: 12px 20px; font-size: 15px; }
+    .hint { font-size: 12px; line-height: 1.7; }
+    .tabs { gap: 6px; }
+    .tabs button { flex: 1 1 auto; padding: 10px 6px; font-size: 13px; text-align: center; white-space: nowrap; }
+    .tabs button:nth-child(1) { flex-basis: 22%; }
+    .tabs button:nth-child(2) { flex-basis: 26%; }
+    .tabs button:nth-child(3) { flex-basis: 22%; }
+    .tabs button:nth-child(4) { flex-basis: 30%; }
+    .book-head { padding: 9px 12px; font-size: 14px; }
+    .page-item { padding: 10px 12px; }
+    .page-item .txt { font-size: 14px; line-height: 1.75; word-break: break-word; }
+    .combine-view, .ai-view, .summary-view { padding: 16px 14px; line-height: 1.9; }
+    .ai-view h1 { font-size: 18px; }
+    .ai-view h2 { font-size: 16px; }
+    .ai-view p { word-break: break-word; }
+    #result img { max-width: 100% !important; height: auto !important; }
+    .copybar button { font-size: 13px; padding: 8px 14px; }
+    .footer { font-size: 11px; padding: 14px; }
+  }
+
 </style>
 </head>
 <body>
@@ -91,14 +121,12 @@
   <div class="searchbox">
     <input id="kw" type="text" placeholder="请输入地名或人名，如：蓝田、桥头河、李燮和、罗辀重、国立师范学院…" onkeydown="if(event.key==='Enter')search()">
     <button onclick="search()">检索</button>
-    <button class="ai" onclick="aiWrite()">AI成文</button>
-    <button class="primary" onclick="combine()">整合成文</button>
   </div>
   <div class="hint">输入人名、地名或历史时期，点<b>「AI成文」</b>由AI通读各书后按时间、事件脉络写成完整文章。示例：<b>蓝田</b>、<b>桥头河</b>、<b>龙山</b>、<b>李燮和</b>、<b>罗辀重</b>、<b>国立师范学院</b></div>
   <div class="tabs">
     <button id="tab1" class="active" onclick="showTab('book')">按书浏览</button>
     <button id="tab2" onclick="showTab('combine')">整合成文</button>
-    <button id="tab3" onclick="showTab('ai')">AI文章</button>
+    <button id="tab3" onclick="aiWrite()">AI成文</button>
     <button id="tab4" onclick="showTab('history')">历史记录</button>
   </div>
   <div id="status">数据加载中…</div>
