@@ -132,6 +132,32 @@
   body.dark .copybar button { background: #1F4E78; }
   body.dark .booksrc { color: #8a94a0; }
 
+
+  /* ===== 藏书总览驾驶舱 ===== */
+  .dash { background: #fffdf6; border: 1px solid #ddd5be; border-radius: 12px; padding: 22px 26px; margin-top: 28px; }
+  .dash-head { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+  .dash-head h2 { color: #1F4E78; font-size: 20px; letter-spacing: 1px; }
+  .dash-head .dash-tag { font-size: 13px; color: #8a6d3b; background: #f0e9d8; padding: 4px 12px; border-radius: 20px; }
+  .dash-stats { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 18px; }
+  .dash-stat { flex: 1 1 150px; background: linear-gradient(135deg, #2c5f8a, #1F4E78); color: #fff; border-radius: 10px; padding: 14px 16px; text-align: center; }
+  .dash-stat .num { font-size: 26px; font-weight: bold; }
+  .dash-stat .lbl { font-size: 12px; opacity: .85; margin-top: 4px; }
+  .dash-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .dash-table th { background: #f0e9d8; color: #5a4a22; text-align: left; padding: 9px 12px; font-size: 13px; border-bottom: 2px solid #ddd5be; }
+  .dash-table td { padding: 9px 12px; border-bottom: 1px solid #e2dbc6; color: #333; vertical-align: top; }
+  .dash-table tr:hover td { background: #faf5e6; }
+  .dash-table .bname { font-weight: bold; color: #1F4E78; }
+  .dash-table .bmeta { color: #777; font-size: 13px; }
+  .dash-book-icon { display: inline-block; width: 8px; height: 22px; background: #8a6d3b; border-radius: 2px; margin-right: 8px; vertical-align: middle; }
+  body.dark .dash { background: #232a33; border-color: #3a4554; }
+  body.dark .dash-head h2 { color: #9db8d4; }
+  body.dark .dash-head .dash-tag { color: #c9b98a; background: #2a3340; }
+  body.dark .dash-table th { background: #2a3340; color: #c9b98a; border-bottom-color: #3a4554; }
+  body.dark .dash-table td { border-bottom-color: #2f3844; color: #c9cfd8; }
+  body.dark .dash-table tr:hover td { background: #2a3340; }
+  body.dark .dash-table .bname { color: #9db8d4; }
+  body.dark .dash-table .bmeta { color: #8a94a0; }
+
 </style>
 </head>
 <body>
@@ -159,6 +185,7 @@
   </div>
   <div id="status">数据加载中…</div>
   <div id="result"></div>
+  <div id="dashboard"></div>
 </div>
 <div class="footer">涟源政协文史 · 内部研究使用</div>
 
@@ -183,8 +210,76 @@ function init() {
   document.getElementById('status').textContent =
     '已加载 ' + DATA.length + ' 本书，' + totalPages + ' 页，可检索。';
   if (!DATA.length) document.getElementById('status').textContent = '未加载到数据，请确认数据已内嵌。';
+  buildDashboard();
 }
-init();
+
+// ===== 藏书总览驾驶舱 =====
+// 每本书的出版信息（按 DATA 中的书名精确匹配；缺省值显示"待考"）
+var BOOK_META = {
+  '国师拾遗（上册）': { year: '2026', src: '排版稿' },
+  '国师拾遗（下册）': { year: '2026', src: '排版稿' },
+  '娄底文史第10辑·娄底读本': { year: '2014', src: '湖南人民出版社' },
+  '娄底文史第2辑·罗辀重遗著选编': { year: '1991', src: '娄底文史丛书' },
+  '娄底文史第3辑': { year: '1992', src: '娄底文史丛书' },
+  '娄底文史第4辑·李振翩诞辰一百周年专集': { year: '1996', src: '娄底文史丛书' },
+  '娄底文史资料第1辑': { year: '1988', src: '娄底文史丛书' },
+  '李燮和研究史料集': { year: '2010', src: '易志祥主编' },
+  '涟源古建筑': { year: '2014', src: '贺顺清主编' },
+  '涟源味道·舌尖上的涟源': { year: '2020', src: '政协涟源市委员会、民盟涟源市委员会主编' },
+  '涟源文物精粹': { year: '2011', src: '易志祥主编' },
+  '烽火弦歌·抗日战争时期湖南文化教育中心涟源': { year: '2019', src: '政协涟源市委员会编' },
+  '烽火弦歌·正文定稿': { year: '2026', src: '排版稿' }
+};
+var BOOK_ADDED = '2026-08-30'; // 全部书籍收录（上传）日期
+
+function buildDashboard() {
+  var el = document.getElementById('dashboard');
+  if (!el) return;
+  if (!DATA || !DATA.length) return;
+  var totalBooks = DATA.length;
+  var totalPages = DATA.reduce(function (s, b) { return s + b.pages.length; }, 0);
+  var yearCount = {};
+  DATA.forEach(function (b) {
+    var m = BOOK_META[b.name] || {};
+    var y = m.year || '待考';
+    yearCount[y] = (yearCount[y] || 0) + 1;
+  });
+  var years = Object.keys(yearCount).sort(function (a, b) {
+    var na = (a === '待考') ? -1 : parseInt(a, 10);
+    var nb = (b === '待考') ? -1 : parseInt(b, 10);
+    return na - nb;
+  });
+  var rows = DATA.map(function (b, i) {
+    var m = BOOK_META[b.name] || {};
+    var year = m.year || '待考';
+    var src = m.src || '';
+    var added = BOOK_ADDED;
+    return '<tr>' +
+      '<td class="bname"><span class="dash-book-icon"></span>' + escapeHtml(b.name) + '</td>' +
+      '<td>' + b.pages.length + ' 页</td>' +
+      '<td>' + escapeHtml(year) + (src ? '<div class="bmeta">' + escapeHtml(src) + '</div>' : '') + '</td>' +
+      '<td>' + escapeHtml(added) + '</td>' +
+      '</tr>';
+  }).join('');
+  el.innerHTML =
+    '<div class="dash">' +
+      '<div class="dash-head">' +
+        '<h2>藏书总览</h2>' +
+        '<span class="dash-tag">共 ' + years.length + ' 个出版年份 · 收录日期 ' + escapeHtml(BOOK_ADDED) + '</span>' +
+      '</div>' +
+      '<div class="dash-stats">' +
+        '<div class="dash-stat"><div class="num">' + totalBooks + '</div><div class="lbl">藏书（本）</div></div>' +
+        '<div class="dash-stat"><div class="num">' + totalPages + '</div><div class="lbl">总页数（页）</div></div>' +
+        '<div class="dash-stat"><div class="num">' + years.filter(function(y){return y!=='待考';}).length + '</div><div class="lbl">出版年份数</div></div>' +
+        '<div class="dash-stat"><div class="num">' + DATA.reduce(function(s,b){ return s + (BOOK_META[b.name] && BOOK_META[b.name].src === '排版稿' ? 1 : 0); },0) + '</div><div class="lbl">排版稿（本）</div></div>' +
+      '</div>' +
+      '<table class="dash-table">' +
+        '<thead><tr><th style="width:42%">书名</th><th>页数</th><th style="width:24%">出版年份 / 编者</th><th>收录时间</th></tr></thead>' +
+        '<tbody>' + rows + '</tbody>' +
+      '</table>' +
+      '<div style="margin-top:12px;font-size:12px;color:#999">出版年份与编者信息来自各书版权页及编者署名，供研究参考。</div>' +
+    '</div>';
+}
 
 function escapeHtml(s) {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -756,6 +851,9 @@ function clearKeyFromSettings() {
   alert('已清除。');
   openSettings();
 }
+
+// 数据初始化（放在脚本末尾，确保 BOOK_META 等已定义）
+init();
 
 </script></script>
 </body>
