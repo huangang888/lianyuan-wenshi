@@ -91,10 +91,12 @@
     .hint { font-size: 12px; line-height: 1.7; }
     .tabs { gap: 6px; }
     .tabs button { flex: 1 1 auto; padding: 10px 6px; font-size: 13px; text-align: center; white-space: nowrap; }
-    .tabs button:nth-child(1) { flex-basis: 22%; }
-    .tabs button:nth-child(2) { flex-basis: 26%; }
-    .tabs button:nth-child(3) { flex-basis: 22%; }
-    .tabs button:nth-child(4) { flex-basis: 30%; }
+    .tabs button:nth-child(1) { flex-basis: 16%; }
+    .tabs button:nth-child(2) { flex-basis: 16%; }
+    .tabs button:nth-child(3) { flex-basis: 16%; }
+    .tabs button:nth-child(4) { flex-basis: 16%; }
+    .tabs button:nth-child(5) { flex-basis: 16%; }
+    .tabs button:nth-child(6) { flex-basis: 16%; }
     .book-head { padding: 9px 12px; font-size: 14px; }
     .page-item { padding: 10px 12px; }
     .page-item .txt { font-size: 14px; line-height: 1.75; word-break: break-word; }
@@ -108,29 +110,6 @@
   }
 
 
-  /* ===== 深色模式 ===== */
-  body.dark { background: #1a1f26; color: #d5d8dc; }
-  body.dark header { background: #15283c; }
-  body.dark header p { color: #b9c6d4; }
-  body.dark .searchbox input { background: #232a33; color: #e0e4ea; border-color: #3a4554; }
-  body.dark .searchbox input::placeholder { color: #7a8494; }
-  body.dark .hint { color: #8a94a0; }
-  body.dark .hint b { color: #c9b98a; }
-  body.dark #status { color: #8a94a0; }
-  body.dark .book-block, body.dark .combine-view, body.dark .ai-view, body.dark .summary-view { background: #232a33; border-color: #3a4554; }
-  body.dark .page-item { border-bottom-color: #2f3844; }
-  body.dark .page-item .txt { color: #c9cfd8; }
-  body.dark .page-item mark { background: #6b5a2e; color: #fff; }
-  body.dark .tabs button { background: #2a3340; color: #c9cfd8; border-color: #3a4554; }
-  body.dark .tabs button.active { background: #1F4E78; color: #fff; border-color: #1F4E78; }
-  body.dark .ai-meta, body.dark .summary-view .stats { background: #2a3340; color: #aeb6c2; }
-  body.dark .ai-view h1, body.dark .ai-view h2, body.dark .combine-view h3, body.dark .summary-view h2, body.dark .summary-view h3 { color: #9db8d4; }
-  body.dark .combine-view h2 { color: #9db8d4; }
-  body.dark .empty { color: #8a94a0; }
-  body.dark .footer { color: #666; }
-  body.dark .ai-loading { color: #8a94a0; }
-  body.dark .copybar button { background: #1F4E78; }
-  body.dark .booksrc { color: #8a94a0; }
 
 
   /* ===== 藏书总览驾驶舱 ===== */
@@ -149,14 +128,6 @@
   .dash-table .bname { font-weight: bold; color: #1F4E78; }
   .dash-table .bmeta { color: #777; font-size: 13px; }
   .dash-book-icon { display: inline-block; width: 8px; height: 22px; background: #8a6d3b; border-radius: 2px; margin-right: 8px; vertical-align: middle; }
-  body.dark .dash { background: #232a33; border-color: #3a4554; }
-  body.dark .dash-head h2 { color: #9db8d4; }
-  body.dark .dash-head .dash-tag { color: #c9b98a; background: #2a3340; }
-  body.dark .dash-table th { background: #2a3340; color: #c9b98a; border-bottom-color: #3a4554; }
-  body.dark .dash-table td { border-bottom-color: #2f3844; color: #c9cfd8; }
-  body.dark .dash-table tr:hover td { background: #2a3340; }
-  body.dark .dash-table .bname { color: #9db8d4; }
-  body.dark .dash-table .bmeta { color: #8a94a0; }
 
 
   /* ===== 驾驶舱分类+封面卡片 ===== */
@@ -175,16 +146,6 @@
   .dash-card-meta { font-size: 12px; color: #666; margin-top: 4px; }
   .dash-card-src { font-size: 11px; color: #8a6d3b; margin-top: 2px; }
   .dash-card-added { font-size: 11px; color: #999; margin-top: 4px; }
-  body.dark .dash-cat-head { border-bottom-color: #3a4554; }
-  body.dark .dash-cat-head h3 { color: #9db8d4; }
-  body.dark .dash-cat-head .dash-cat-tag { color: #c9b98a; background: #2a3340; }
-  body.dark .dash-card { background: #2a3340; border-color: #3a4554; }
-  body.dark .dash-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,.5); }
-  body.dark .dash-card-name { color: #9db8d4; }
-  body.dark .dash-card-meta { color: #aeb6c2; }
-  body.dark .dash-card-src { color: #c9b98a; }
-  body.dark .dash-card-added { color: #8a94a0; }
-  body.dark .dash-cover { border-color: #3a4554; }
 
 </style>
 </head>
@@ -195,7 +156,6 @@
     <p>输入地名或人名，一键检索全部文史书籍，并按时间、事件脉络整理成文</p>
   </div>
   <div style="display:flex;gap:8px">
-    <button id="darkBtn" onclick="toggleDark()" style="padding:8px 16px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;cursor:pointer;font-size:14px">深色</button>
     <button onclick="openSettings()" style="padding:8px 16px;background:rgba(255,255,255,.15);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:6px;cursor:pointer;font-size:14px">API设置</button>
   </div>
 </header>
@@ -207,9 +167,11 @@
   <div class="hint">输入人名、地名或历史时期，点<b>「AI成文」</b>由AI通读各书后按时间、事件脉络写成完整文章。示例：<b>蓝田</b>、<b>桥头河</b>、<b>龙山</b>、<b>李燮和</b>、<b>罗辀重</b>、<b>国立师范学院</b></div>
   <div class="tabs">
     <button id="tab1" class="active" onclick="showTab('book')">按书浏览</button>
-    <button id="tab2" onclick="showTab('combine')">整合成文</button>
+    <button id="tab2" onclick="compare()">多书比对</button>
     <button id="tab3" onclick="aiWrite()">AI成文</button>
-    <button id="tab4" onclick="showTab('history')">历史记录</button>
+    <button id="tab4" onclick="renderTopics()">专题库</button>
+    <button id="tab5" onclick="chrono()">年谱</button>
+    <button id="tab6" onclick="showTab('history')">历史记录</button>
   </div>
   <div id="status">数据加载中…</div>
   <div id="result"></div>
@@ -897,23 +859,6 @@ function exportHistory(id) {
 }
 
 // ===== 设置 API Key =====
-function toggleDark() {
-  const dark = document.body.classList.toggle('dark');
-  try { localStorage.setItem('lw_dark', dark ? '1' : '0'); } catch (e) {}
-  const btn = document.getElementById('darkBtn');
-  if (btn) btn.textContent = dark ? '浅色' : '深色';
-}
-
-(function initDark() {
-  let dark = '0';
-  try { dark = localStorage.getItem('lw_dark') || '0'; } catch (e) {}
-  if (dark === '1') {
-    document.body.classList.add('dark');
-    const b = document.getElementById('darkBtn');
-    if (b) b.textContent = '浅色';
-  }
-})();
-
 function openSettings() {
   const cur = getApiKey();
   const masked = cur ? cur.substring(0, 6) + '…' + cur.substring(cur.length - 4) : '（未设置）';
@@ -948,6 +893,477 @@ function clearKeyFromSettings() {
 
 // 数据初始化（放在脚本末尾，确保 BOOK_META 等已定义）
 init();
+
+/* =====================================================================
+   涟源文史知识库 · 新增功能模块
+   包含：多书比对、页码溯源、三大专题库（湘军/龙山/国师）、人物年谱
+   开发版 2026-09-07
+   ===================================================================== */
+
+// ===== 注入新增样式 =====
+(function () {
+  var css = [
+    '/* ===== 新增功能样式 ===== */',
+    '.pgclick { color:#1F4E78; cursor:pointer; border-bottom:1px dashed #1F4E78; padding:0 1px; }',
+    '.pgclick:hover { background:#1F4E78; color:#fff; border-radius:3px; }',
+    '/* 比对视图 */',
+    '.cmp-col { background:#fffdf6; border:1px solid #e2dbc6; border-radius:10px; margin-bottom:14px; overflow:hidden; }',
+    '.cmp-book { background:#f0e9d8; color:#5a4a22; font-weight:bold; padding:9px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; }',
+    '.cmp-item { padding:10px 14px; border-bottom:1px dashed #e2dbc6; font-size:14px; line-height:1.7; color:#333; }',
+    '.cmp-item:last-child { border-bottom:none; }',
+    '.cmp-pg { color:#1F4E78; font-size:12px; margin-top:3px; }',
+    '.cmp-diff { background:#fdf3e0; border-left:3px solid #c9b98a; }',
+    '/* 专题库 */',
+    '.topic-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px; margin-top:10px; }',
+    '.topic-card { background:linear-gradient(160deg,#1F4E78,#2c5f8a); color:#fff; border-radius:12px; padding:22px 20px; cursor:pointer; transition:.2s; box-shadow:0 2px 8px rgba(31,78,120,.18); }',
+    '.topic-card:hover { transform:translateY(-3px); box-shadow:0 6px 18px rgba(31,78,120,.28); }',
+    '.topic-card h3 { margin:0 0 8px; font-size:20px; letter-spacing:2px; }',
+    '.topic-card p { margin:0; font-size:13px; opacity:.9; line-height:1.6; }',
+    '.topic-card .tag { display:inline-block; background:rgba(255,255,255,.2); padding:2px 10px; border-radius:20px; font-size:12px; margin-top:12px; }',
+    '.topic-head { background:#f0e9d8; border:1px solid #ddd5be; border-radius:10px; padding:16px 20px; margin-bottom:14px; }',
+    '.topic-head h2 { color:#1F4E78; margin:0 0 8px; }',
+    '.topic-head .intro { color:#5a4a22; font-size:14px; line-height:1.7; margin:0 0 10px; }',
+    '.topic-kw { display:flex; flex-wrap:wrap; gap:6px; }',
+    '.topic-kw span { background:#fff; border:1px solid #c9b98a; color:#5a4a22; padding:2px 10px; border-radius:20px; font-size:12px; }',
+    '.topic-btn { background:#8a6d3b; color:#fff; border:none; padding:9px 20px; border-radius:6px; cursor:pointer; font-size:14px; margin-top:12px; }',
+    '.topic-btn:hover { background:#6f562f; }',
+    '/* 年谱 */',
+    '.chrono-wrap { background:#fffdf6; border:1px solid #e2dbc6; border-radius:10px; padding:18px 22px; }',
+    '.chrono-year { display:flex; gap:14px; padding:10px 0; border-bottom:1px dashed #e2dbc6; align-items:flex-start; }',
+    '.chrono-year:last-child { border-bottom:none; }',
+    '.chrono-ym { flex:0 0 110px; color:#8a6d3b; font-weight:bold; font-size:15px; padding-top:2px; }',
+    '.chrono-ev { flex:1; min-width:0; font-size:14px; line-height:1.8; color:#333; }',
+    '.chrono-ev .src { color:#1F4E78; font-size:12px; margin-top:2px; }',
+    '.chrono-empty { color:#8a94a0; text-align:center; padding:30px; }',
+    '/* 弹层 */',
+    '.modal-mask { position:fixed; inset:0; background:rgba(20,30,45,.55); z-index:999; display:none; align-items:center; justify-content:center; padding:16px; }',
+    '.modal-mask.show { display:flex; }',
+    '.modal-box { background:#fffdf6; border-radius:12px; max-width:760px; width:100%; max-height:86vh; display:flex; flex-direction:column; box-shadow:0 10px 40px rgba(0,0,0,.35); }',
+    '.modal-head { background:#1F4E78; color:#fff; padding:13px 18px; border-radius:12px 12px 0 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; }',
+    '.modal-head b { font-size:15px; }',
+    '.modal-close { background:rgba(255,255,255,.18); border:none; color:#fff; border-radius:6px; cursor:pointer; padding:5px 14px; font-size:13px; }',
+    '.modal-body { padding:16px 20px; overflow:auto; font-size:15px; line-height:2; color:#333; white-space:pre-wrap; }'
+  ].join('\n');
+  var st = document.createElement('style');
+  st.textContent = css;
+  (document.head || document.documentElement).appendChild(st);
+})();
+
+// ===== 辅助：转义单引号（用于 onclick 传参）=====
+function escApos(s) {
+  return String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+}
+
+// ===== 页码溯源：点击页码弹该页全文 =====
+function showPageDetail(bookName, pageNo) {
+  var book = null;
+  for (var i = 0; i < DATA.length; i++) {
+    if (DATA[i].name === bookName) { book = DATA[i]; break; }
+  }
+  var text = '';
+  if (book) {
+    for (var j = 0; j < book.pages.length; j++) {
+      if (book.pages[j].p === pageNo) { text = book.pages[j].t; break; }
+    }
+  }
+  if (!book || !text) {
+    alert('未找到《' + bookName + '》第' + pageNo + '页的原文。');
+    return;
+  }
+  var mask = document.getElementById('lwModal');
+  if (!mask) {
+    mask = document.createElement('div');
+    mask.id = 'lwModal';
+    mask.className = 'modal-mask';
+    mask.onclick = function (e) { if (e.target === mask) closePageDetail(); };
+    document.body.appendChild(mask);
+  }
+  mask.innerHTML =
+    '<div class="modal-box">' +
+    '<div class="modal-head"><b>《' + escapeHtml(bookName) + '》第' + pageNo + '页</b>' +
+    '<button class="modal-close" onclick="closePageDetail()">关闭</button></div>' +
+    '<div class="modal-body">' + escapeHtml(text) + '</div></div>';
+  mask.classList.add('show');
+}
+function closePageDetail() {
+  var mask = document.getElementById('lwModal');
+  if (mask) mask.classList.remove('show');
+}
+
+// ===== 覆盖 search：页码可点击溯源 =====
+function search() {
+  var kw = document.getElementById('kw').value.trim();
+  if (!kw) { alert('请输入地名或人名'); return; }
+  lastKw = kw;
+  var kws = splitKw(kw);
+  var total = { count: 0, books: 0 };
+  var html = '';
+  var foundAny = false;
+  for (var i = 0; i < DATA.length; i++) {
+    var book = DATA[i];
+    var hits = [];
+    var cnt = 0;
+    for (var k = 0; k < book.pages.length; k++) {
+      var pg = book.pages[k];
+      if (!kws.every(function (q) { return pg.t.indexOf(q) !== -1; })) continue;
+      var idx = pg.t.indexOf(kws[0]);
+      var s = Math.max(0, idx - 60), e = Math.min(pg.t.length, idx + kw.length + 60);
+      var snippet = pg.t.substring(s, e);
+      if (s > 0) snippet = '…' + snippet;
+      if (e < pg.t.length) snippet = snippet + '…';
+      hits.push({ p: pg.p, snippet: snippet });
+      cnt++;
+    }
+    if (cnt > 0) {
+      foundAny = true;
+      total.count += cnt;
+      total.books++;
+      html += '<div class="book-block"><div class="book-head"><span>' + escapeHtml(book.name) +
+              '</span><span class="cnt">' + cnt + ' 处</span></div>';
+      hits.slice(0, 40).forEach(function (h) {
+        html += '<div class="page-item"><span class="pg pgclick" onclick="showPageDetail(\'' +
+                escApos(book.name) + '\',' + h.p + ')">第' + h.p + '页</span>' +
+                '<div class="txt">' + highlight(h.snippet, kw) + '</div></div>';
+      });
+      if (hits.length > 40) html += '<div class="page-item">… 共' + hits.length + '处，其余请查看索引表</div>';
+      html += '</div>';
+    }
+  }
+  if (!foundAny) {
+    html = '<div class="empty">未在已收录书籍中找到「' + escapeHtml(kw) + '」<br>可尝试更短的关键词、用空格隔开多词（如「钱钟书 萝卜」），或变体如「涟源」亦可搜「链源」</div>';
+  }
+  document.getElementById('result').innerHTML = html;
+  document.getElementById('status').textContent = '「' + kw + '」共检索到 ' + total.count + ' 处，分布于 ' + total.books + ' 本书。';
+  setTabActive('book');
+}
+
+// ===== 多书比对：同名条目各书原文并排 =====
+function compare() {
+  var kw = document.getElementById('kw').value.trim();
+  if (!kw) { alert('请输入地名或人名'); return; }
+  lastKw = kw;
+  var kws = splitKw(kw);
+  var html = '<div class="combine-view"><h2 style="color:#1F4E78">「' + escapeHtml(kw) + '」多书比对</h2>' +
+             '<div class="subtitle">同名史实散见于各书，逐书记载并排列出，便于交叉考据。点页码可看该页全文。</div>';
+  var foundAny = false;
+  for (var i = 0; i < DATA.length; i++) {
+    var book = DATA[i];
+    var items = [];
+    for (var k = 0; k < book.pages.length; k++) {
+      var pg = book.pages[k];
+      if (!kws.every(function (q) { return pg.t.indexOf(q) !== -1; })) continue;
+      var idx = pg.t.indexOf(kws[0]);
+      var s = Math.max(0, idx - 90), e = Math.min(pg.t.length, idx + kw.length + 90);
+      items.push({ p: pg.p, t: (s > 0 ? '…' : '') + pg.t.substring(s, e) + (e < pg.t.length ? '…' : '') });
+      if (items.length >= 8) break;
+    }
+    if (items.length) {
+      foundAny = true;
+      html += '<div class="cmp-col"><div class="cmp-book">' + escapeHtml(book.name) +
+              '<span style="font-weight:normal;font-size:12px;color:#8a6d3b">' + items.length + ' 处</span></div>';
+      items.forEach(function (it) {
+        html += '<div class="cmp-item">' + highlight(it.t, kw) +
+                '<div class="cmp-pg"><span class="pgclick" onclick="showPageDetail(\'' +
+                escApos(book.name) + '\',' + it.p + ')">第' + it.p + '页</span></div></div>';
+      });
+      html += '</div>';
+    }
+  }
+  if (!foundAny) html += '<p>未找到相关内容。</p>';
+  html += '</div>';
+  document.getElementById('result').innerHTML = html;
+  document.getElementById('status').textContent = '「' + kw + '」多书比对已生成。';
+  setTabActive('compare');
+}
+
+// ===== 三大专题词表 =====
+var TOPICS = [
+  {
+    id: 'xiangjun',
+    name: '湘军',
+    intro: '涟源（原属湘乡、安化）是湘军发祥重镇，杨市、荷塘、金石一带曾走出李续宾、李续宜、刘腾鸿、蒋益澧等一批湘军名将，史称"湘军文武之邦"。本专题聚合库内湘军将领、战事、乡里源流的全部记载。',
+    tags: '湘军名将 · 杨市 · 团练 · 乡邦源流',
+    keywords: ['李续宾','李续宜','萧庆衍','刘腾鸿','周宽世','蒋益澧','罗泽南','王錱','曾国藩','曾国荃','刘蓉','杨昌濬','刘锦棠','胡林翼','左宗棠','李光久','湘军','团练','杨市','荷塘','金石']
+  },
+  {
+    id: 'longshan',
+    name: '龙山',
+    intro: '龙山为涟源南部名山，自古是药王孙思邈采药行医之地，留有药王殿等古迹，是中医药文化的活态传承。本专题聚合龙山形胜、药王文化、采药行医的全部记载。',
+    tags: '药王文化 · 孙思邈 · 药王殿 · 中医药',
+    keywords: ['龙山','药王','孙思邈','药王殿','采药','白马','伏口']
+  },
+  {
+    id: 'guoshi',
+    name: '国师（国立师范学院）',
+    intro: '抗战时期，国立师范学院西迁蓝田，廖世承、钱基博、钱钟书、孟宪承等名家云集光明山李园，涟源一时成为大后方文化教育重镇，堪称涟源的高光时刻。本专题聚合国师在蓝田办学的全部记载。',
+    tags: '国立师范学院 · 蓝田 · 抗战文教 · 光明山李园',
+    keywords: ['国立师范学院','国师附中','国师','廖世承','钱基博','孟宪承','钱钟书','储安平','曹典球','高觉敷','皮名举','钟泰','马宗霍','李剑农','汪梧封','刘佛年','光明山李园','蓝田','七星街']
+  }
+];
+
+// ===== 专题聚合：收集某专题下所有原文 =====
+function collectTopic(topic) {
+  var results = [];
+  for (var i = 0; i < DATA.length; i++) {
+    var book = DATA[i];
+    var pagesMap = {};
+    var kwHit = {};
+    for (var k = 0; k < book.pages.length; k++) {
+      var pg = book.pages[k];
+      var hit = null;
+      for (var q = 0; q < topic.keywords.length; q++) {
+        if (pg.t.indexOf(topic.keywords[q]) !== -1) { hit = topic.keywords[q]; break; }
+      }
+      if (!hit) continue;
+      if (!kwHit[hit]) kwHit[hit] = 0;
+      kwHit[hit]++;
+      var sents = splitSentences(pg.t);
+      for (var si = 0; si < sents.length; si++) {
+        if (sents[si].indexOf(hit) !== -1) {
+          var m = sents[si];
+          if (m.length < 20 && si + 1 < sents.length) m += sents[si + 1];
+          if (!pagesMap[pg.p]) pagesMap[pg.p] = [];
+          pagesMap[pg.p].push(m);
+        }
+      }
+    }
+    var pkeys = Object.keys(pagesMap);
+    if (pkeys.length) {
+      var items = [], count = 0;
+      pkeys.slice(0, 20).forEach(function (pi) {
+        count += pagesMap[pi].length;
+        items.push({ page: pi, text: pagesMap[pi].join(' ') });
+      });
+      results.push({ book: book.name, count: count, pages: pkeys.map(Number).sort(function (a, b) { return a - b; }), items: items, kwHit: kwHit });
+    }
+  }
+  return results;
+}
+
+// ===== 专题库首页 =====
+function renderTopics() {
+  var html = '<div class="combine-view"><h2 style="color:#1F4E78">文史专题库</h2>' +
+             '<div class="subtitle">涟源三大文化高光：湘军、龙山、国师。点开任一专题，聚合全部书籍的相关史料，可逐条考据，亦可一键生成专题综述。</div>' +
+             '<div class="topic-grid">';
+  TOPICS.forEach(function (t) {
+    html += '<div class="topic-card" onclick="topicView(\'' + t.id + '\')">' +
+            '<h3>' + escapeHtml(t.name) + '</h3>' +
+            '<p>' + escapeHtml(t.intro) + '</p>' +
+            '<span class="tag">' + escapeHtml(t.tags) + '</span></div>';
+  });
+  html += '</div></div>';
+  document.getElementById('result').innerHTML = html;
+  document.getElementById('status').textContent = '文史专题库：湘军 · 龙山 · 国师';
+  setTabActive('topic');
+}
+
+// ===== 专题详情 =====
+function topicView(topicId) {
+  var topic = null;
+  TOPICS.forEach(function (t) { if (t.id === topicId) topic = t; });
+  if (!topic) return;
+  lastKw = topic.name;
+  var results = collectTopic(topic);
+  var totalCount = results.reduce(function (s, r) { return s + r.count; }, 0);
+  var html = '<div class="combine-view">' +
+             '<div class="topic-head"><h2>' + escapeHtml(topic.name) + '</h2>' +
+             '<p class="intro">' + escapeHtml(topic.intro) + '</p>' +
+             '<div class="topic-kw">' + topic.keywords.map(function (k) { return '<span>' + escapeHtml(k) + '</span>'; }).join('') + '</div>' +
+             '<button class="topic-btn" onclick="topicWrite(\'' + topic.id + '\')">一键生成《' + escapeHtml(topic.name) + '》专题综述</button>' +
+             '</div>';
+  html += '<div class="subtitle">共聚合 ' + results.length + ' 本书、' + totalCount + ' 处记载。</div>';
+  results.forEach(function (r) {
+    html += '<div class="cmp-col"><div class="cmp-book">' + escapeHtml(r.book) +
+            '<span style="font-weight:normal;font-size:12px;color:#8a6d3b">' + r.count + ' 处 · 关键词命中：' +
+            Object.keys(r.kwHit).map(function (k) { return k + '(' + r.kwHit[k] + ')'; }).join('、') + '</span></div>';
+    r.items.slice(0, 10).forEach(function (it) {
+      html += '<div class="cmp-item">' + escapeHtml(it.text) +
+              '<div class="cmp-pg"><span class="pgclick" onclick="showPageDetail(\'' +
+              escApos(r.book) + '\',' + it.page + ')">第' + it.page + '页</span></div></div>';
+    });
+    if (r.items.length > 10) html += '<div class="cmp-item" style="color:#8a94a0">… 该主题相关记载较多，其余请查看索引表。</div>';
+  });
+  html += '</div>';
+  document.getElementById('result').innerHTML = html;
+  document.getElementById('status').textContent = '专题：' + topic.name + '（' + results.length + '本书、' + totalCount + '处）';
+  setTabActive('topic');
+}
+
+// ===== 专题综述生成（复用 AI 成文）=====
+function topicWrite(topicId) {
+  var topic = null;
+  TOPICS.forEach(function (t) { if (t.id === topicId) topic = t; });
+  if (!topic) return;
+  var apiKey = getApiKey();
+  if (!apiKey) {
+    openSettings();
+    document.getElementById('status').textContent = '请先设置 DeepSeek API Key 再生成专题综述。';
+    return;
+  }
+  var results = collectTopic(topic);
+  if (!results.length) {
+    document.getElementById('result').innerHTML = '<div class="empty">暂未聚合到「' + escapeHtml(topic.name) + '」的相关记载。</div>';
+    return;
+  }
+  document.getElementById('result').innerHTML =
+    '<div class="ai-loading"><div class="spin"></div><br>正在通读「' + escapeHtml(topic.name) + '」相关史料，AI整理成文，约需30秒…</div>';
+  document.getElementById('status').textContent = '正在生成「' + topic.name + '」专题综述…';
+  showTab('ai');
+  var prompt = buildTopicPrompt(topic, results);
+  callDeepSeekFront(apiKey, prompt.system, prompt.user).then(function (article) {
+    var total = results.reduce(function (s, r) { return s + r.count; }, 0);
+    addHistoryFront({ kw: topic.name + '（专题综述）', total: total, book_count: results.length, books: results.map(function (r) { return { book: r.book, count: r.count, pages: r.pages.slice(0, 60) }; }), article: article });
+    lastSummaryPlain = '【' + topic.name + '】专题综述\n\n' + article;
+    var meta = '基于 ' + results.length + ' 本书、' + total + ' 处记载生成：' +
+               results.map(function (r) { return '《' + r.book + '》'; }).join('、');
+    document.getElementById('result').innerHTML =
+      '<div class="copybar"><button onclick="copySummary()">复制全文</button> ' +
+      '<button onclick="exportLastArticle()">导出Word</button></div>' +
+      '<div class="ai-view"><div class="ai-meta">' + escapeHtml(meta) + '</div>' +
+      mdToHtml(article) + '</div>';
+    document.getElementById('status').textContent = '「' + topic.name + '」专题综述已生成（' + results.length + '本书、' + total + '处）。';
+  }).catch(function (err) {
+    document.getElementById('result').innerHTML =
+      '<div class="ai-err">生成失败：' + escapeHtml(String(err && err.message ? err.message : err)) + '</div>';
+    document.getElementById('status').textContent = '生成失败。';
+  });
+}
+
+// ===== 专题综述的 prompt（按专题口吻，含引用铁律）=====
+function buildTopicPrompt(topic, results) {
+  var bookLines = [], bodyParts = [], totalChars = 0;
+  results.forEach(function (r) {
+    bookLines.push('《' + r.book + '》（共' + r.count + '处，涉及页码：' + r.pages.slice(0, 40).join(',') + '）');
+    r.items.forEach(function (it) {
+      var t = (it.text || '').trim();
+      if (!t) return;
+      if (t.length > 300) t = t.substring(0, 300) + '…';
+      totalChars += t.length;
+      if (totalChars > 16000) return;
+      bodyParts.push('【《' + r.book + '》第' + it.page + '页】' + t);
+    });
+    if (totalChars > 10000) return;
+  });
+  var system = [
+    '你是资深地方文史研究者，长期从事涟源（含原安化蓝田）文史资料的整理与研究。',
+    '现在要撰写关于涟源「' + topic.name + '」的专题文史综述文章。',
+    '请根据我提供的各本书中关于该专题的原始史料记载，写一篇结构完整、有观点、有脉络的专题综述。',
+    '写作要求：',
+    '1. 开头点明该专题在涟源历史中的地位与意义。',
+    '2. 主体按【时间脉络】与【专题维度】展开，涉及多本书的记载要互相印证、提炼概括，而不是罗列原文。',
+    '3. 结尾升华该专题的历史价值与当代意义。',
+    '4. 全文用规范的书面语文言文结合的白话，文史味浓，条理清晰，分小标题。',
+    '【引用铁律，必须严格执行】',
+    '5. 只能使用"各书原文摘录"中明确记载的事实、细节、数字、时间、提法，严禁编造、推测或补充摘录中不存在的史实。',
+    '6. 文中出现的每一个具体事例、具体提法、引语、年份、数据，都必须紧跟在对应句子后以"（《书名》第X页）"格式注明出处。',
+    '7. 若某段史料在原文摘录中没有页码对应，宁可省略也不可无出处地罗列。',
+    '8. 如不同书对同一事记载有出入，可客观并列并分别注明各自出处，不做推测。',
+    '9. 全文每一处关键论断都要能追溯到摘录原文，做到"言必有据、引必注出处"。',
+    '10. 文章末尾附"史料来源"，逐条列出所依据的书名与页码。'
+  ].join('\n');
+  var user = [
+    '专题：' + topic.name,
+    '专题说明：' + topic.intro,
+    '',
+    '【史料出处概览】',
+    bookLines.join('\n'),
+    '',
+    '【各书原文摘录】（凡引用其中事实必须在其后注明出处）',
+    bodyParts.join('\n'),
+    '',
+    '请据此撰写专题综述。写作时严格遵循引用铁律：只写摘录中有的内容；每一处引注出处；摘录不足以支撑就删去该论断。'
+  ].join('\n');
+  return { system: system, user: user };
+}
+
+// ===== 纪年解析：把汉字数字纪年转公元年 =====
+function cnNum(s) {
+  var map = {零:0,一:1,二:2,三:3,四:4,五:5,六:6,七:7,八:8,九:9,十:10,百:100,千:1000,廿:20,卅:30};
+  var chars = String(s || '').split('');
+  var total = 0, sec = 0;
+  for (var i = 0; i < chars.length; i++) {
+    var v = map[chars[i]];
+    if (v === undefined) return 0;
+    if (v === 10 || v === 100 || v === 1000) {
+      if (sec === 0 && v === 10) total += 10; else total += (sec || 1) * v;
+      sec = 0;
+    } else { sec += v; }
+  }
+  return total + sec;
+}
+var JIANG_ERA = {宣统:1909,光绪:1875,同治:1862,咸丰:1851,道光:1821,嘉庆:1796,乾隆:1736};
+function parseYearFromSentence(s) {
+  var m;
+  if (/民国元年/.test(s)) return 1912;
+  m = s.match(/(宣统|光绪|同治|咸丰|道光|嘉庆|乾隆)元年/);
+  if (m && JIANG_ERA[m[1]]) return JIANG_ERA[m[1]];
+  m = s.match(/(?:18|19|20)\d{2}年/);
+  if (m) return parseInt(m[0].replace('年',''), 10);
+  m = s.match(/民国([一二三四五六七八九十廿卅百]+)年/);
+  if (m) return 1911 + cnNum(m[1]);
+  m = s.match(/(宣统|光绪|同治|咸丰|道光|嘉庆|乾隆)([一二三四五六七八九十廿卅百]+)年/);
+  if (m && JIANG_ERA[m[1]]) return JIANG_ERA[m[1]] + cnNum(m[2]) - 1;
+  return null;
+}
+
+// ===== 人物年谱 =====
+function chrono() {
+  var kw = document.getElementById('kw').value.trim();
+  if (!kw) { alert('请输入人物姓名'); return; }
+  lastKw = kw;
+  var records = []; // {year, book, page, text}
+  for (var i = 0; i < DATA.length; i++) {
+    var book = DATA[i];
+    for (var k = 0; k < book.pages.length; k++) {
+      var pg = book.pages[k];
+      if (pg.t.indexOf(kw) === -1) continue;
+      var sents = splitSentences(pg.t);
+      for (var si = 0; si < sents.length; si++) {
+        var s = sents[si];
+        if (s.indexOf(kw) === -1) continue;
+        var year = parseYearFromSentence(s);
+        if (year) {
+          records.push({ year: year, book: book.name, page: pg.p, text: s });
+        }
+      }
+    }
+  }
+  records.sort(function (a, b) { return a.year - b.year; });
+  var html = '<div class="combine-view"><h2 style="color:#1F4E78">「' + escapeHtml(kw) + '」人物年谱</h2>' +
+             '<div class="subtitle">按年代先后排出该人物生平大事，注明出处。共 ' + records.length + ' 条纪事。点页码可看该页全文。</div>';
+  if (!records.length) {
+    html += '<div class="chrono-empty">未能在书中找到含明确年份的「' + escapeHtml(kw) + '」纪事。<br>可尝试补全姓名或换用别名。</div>';
+  } else {
+    html += '<div class="chrono-wrap">';
+    records.forEach(function (r) {
+      html += '<div class="chrono-year"><div class="chrono-ym">' + r.year + ' 年</div>' +
+              '<div class="chrono-ev">' + escapeHtml(r.text) +
+              '<div class="src">《' + escapeHtml(r.book) + '》<span class="pgclick" onclick="showPageDetail(\'' +
+              escApos(r.book) + '\',' + r.page + ')">第' + r.page + '页</span></div></div></div>';
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+  document.getElementById('result').innerHTML = html;
+  document.getElementById('status').textContent = '「' + kw + '」人物年谱：' + records.length + ' 条纪事。';
+  setTabActive('chrono');
+}
+
+// ===== tab 激活态切换（只改高亮，不触发渲染，避免递归）=====
+function setTabActive(which) {
+  document.getElementById('tab1').classList.toggle('active', which === 'book');
+  document.getElementById('tab2').classList.toggle('active', which === 'compare');
+  document.getElementById('tab3').classList.toggle('active', which === 'ai');
+  document.getElementById('tab4').classList.toggle('active', which === 'topic');
+  document.getElementById('tab5').classList.toggle('active', which === 'chrono');
+  document.getElementById('tab6').classList.toggle('active', which === 'history');
+}
+// ===== showTab：切高亮并按需渲染（book/history 由本处驱动）=====
+function showTab(which) {
+  setTabActive(which);
+  if (which === 'book' && lastKw) search();
+  if (which === 'history') loadHistory();
+}
 
 </script></script>
 </body>
