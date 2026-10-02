@@ -1508,10 +1508,11 @@ function callDeepSeekFront(apiKey, system, user) {
       const finish = d.choices[0].finish_reason;
 
       full += content;
+      if (!full) { throw new Error('模型返回了空内容，请重试或换一个模型。'); }
 
       if (finish !== 'length') return full;
 
-      messages.push({ role: 'assistant', content: content });
+      messages.push({ role: 'assistant', content: content || '（上一段为空回复）' });
 
       messages.push({ role: 'user', content: '【继续】请紧接上文最后一句，继续往下写完整，不要重复已写内容，直到写完为止。' });
 
@@ -3801,10 +3802,11 @@ function callDeepSeekThread(apiKey, messages) {
       const finish = d.choices[0].finish_reason;
 
       full += content;
+      if (!full) { throw new Error('模型返回了空内容，请重试或换一个模型。'); }
 
       if (finish !== 'length') return full;
 
-      msgs.push({ role: 'assistant', content: content });
+      msgs.push({ role: 'assistant', content: content || '（上一段为空回复）' });
 
       msgs.push({ role: 'user', content: '【继续】请紧接上文最后一句，继续往下写完整，不要重复已写内容，直到写完为止。' });
 
@@ -4218,10 +4220,11 @@ function callDeepSeekThread(apiKey, messages) {
       const finish = d.choices[0].finish_reason;
 
       full += content;
+      if (!full) { throw new Error('模型返回了空内容，请重试或换一个模型。'); }
 
       if (finish !== 'length') return full;
 
-      msgs.push({ role: 'assistant', content: content });
+      msgs.push({ role: 'assistant', content: content || '（上一段为空回复）' });
 
       msgs.push({ role: 'user', content: '【继续】请紧接上文最后一句，继续往下写完整，不要重复已写内容，直到写完为止。' });
 
