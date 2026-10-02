@@ -1430,7 +1430,7 @@ function callDeepSeekFront(apiKey, system, user) {
 
   let full = '';
 
-  const maxRounds = 3;
+  const maxRounds = 8;
 
   function oneRound() {
 
@@ -1448,7 +1448,7 @@ function callDeepSeekFront(apiKey, system, user) {
 
         temperature: 0.7,
 
-        max_tokens: 5000,
+        max_tokens: 8192,
 
         stream: false
 
@@ -3736,7 +3736,7 @@ function callDeepSeekThread(apiKey, messages) {
 
   const initLen = msgs.length;
 
-  const maxRounds = 3;
+  const maxRounds = 8;
 
   function oneRound() {
 
@@ -3746,7 +3746,7 @@ function callDeepSeekThread(apiKey, messages) {
 
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
 
-      body: JSON.stringify({ model: 'deepseek-v4-pro', messages: msgs, temperature: 0.7, max_tokens: 5000, stream: false })
+      body: JSON.stringify({ model: 'deepseek-v4-pro', messages: msgs, temperature: 0.7, max_tokens: 8192, stream: false })
 
     }).then(function(resp){
 
@@ -4152,7 +4152,7 @@ function callDeepSeekThread(apiKey, messages) {
 
   const initLen = msgs.length;
 
-  const maxRounds = 3;
+  const maxRounds = 8;
 
   function oneRound() {
 
@@ -4162,7 +4162,7 @@ function callDeepSeekThread(apiKey, messages) {
 
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
 
-      body: JSON.stringify({ model: 'deepseek-v4-pro', messages: msgs, temperature: 0.7, max_tokens: 5000, stream: false })
+      body: JSON.stringify({ model: 'deepseek-v4-pro', messages: msgs, temperature: 0.7, max_tokens: 8192, stream: false })
 
     }).then(function(resp){
 
