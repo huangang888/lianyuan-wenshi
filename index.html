@@ -386,6 +386,26 @@
 
 .hint-link:hover{color:#b8860b}
 
+.rc-round{border:1px solid #c9b98a;border-radius:8px;margin:10px 0;background:#fff;overflow:hidden}
+
+.rc-round-head{display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:#f7f3e8;cursor:pointer;user-select:none}
+
+.rc-round-head:hover{background:#f0e9d8}
+
+.rc-round-head .rc-q{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:700;color:#1F4E78;font-size:14px}
+
+.rc-round-head .rc-num{color:#b8860b;margin-right:6px}
+
+.rc-round-head .rc-arrow{margin-left:10px;color:#8a6d1a;font-size:12px;flex-shrink:0}
+
+.rc-round-body{padding:4px 14px 10px}
+
+.rc-round.collapsed .rc-round-body{display:none}
+
+.rc-user-q{margin:8px 0;color:#555;font-size:13px}
+
+.rc-article-body{border-left:3px solid #b8860b;padding-left:10px}
+
 
 .cite-bar{margin:14px 0;text-align:center;}.cite-bar button{margin:0 6px;padding:6px 14px;background:#0a1a3a;color:#d4af37;border:1px solid #d4af37;border-radius:4px;cursor:pointer;}
 </style>
@@ -4624,6 +4644,10 @@ function renderResearchChat(apiKey) {
 
   html += '<div class="research-chat">';
 
+  // 先把消息整理成一问一答的轮次组
+
+  var groups = [];
+
   var rIdx = 0;
 
   for (var i = 0; i < researchThread.messages.length; i++) {
@@ -4632,55 +4656,95 @@ function renderResearchChat(apiKey) {
 
     if (m.role === 'user' && m.question) {
 
-      html += '<div class="rc-item rc-user"><div class="rc-label">问 ' + (rIdx + 1) + '</div><div class="rc-text">' + escapeHtml(m.question) + '</div></div>';
+      var ov = (rIdx < researchThread.evidences.length) ? researchThread.evidences[rIdx].overview : null;
 
-      if (rIdx < researchThread.evidences.length) {
-
-        var ov = researchThread.evidences[rIdx].overview;
-
-        if (ov && ov.length) html += renderEvidenceOverview(ov);
-
-      }
+      groups.push({ q: m.question, ov: ov, answers: [], isCmd: /^【/.test(m.question), isWen: /^【提炼成文】/.test(m.question) });
 
       rIdx++;
 
-    } else if (m.role === 'assistant') {
+    } else if (m.role === 'assistant' && groups.length) {
 
-      var prevQ = (i > 0 && researchThread.messages[i-1].role === 'user' && researchThread.messages[i-1].question) ? researchThread.messages[i-1].question : '';
+      groups[groups.length - 1].answers.push(m.content);
 
-      var isWen = /^【提炼成文】/.test(prevQ);
+    }
 
-      var aid = 'rcA' + rIdx;
+  }
 
-      if (isWen) {
+  var lastIdx = groups.length - 1;
 
-        window._rcArticles[aid] = m.content;
+  for (var g = 0; g < groups.length; g++) {
 
-        html += '<div class="rc-item rc-ai rc-article" id="' + aid + '">' +
+    var grp = groups[g];
 
-                '<div class="rc-label rc-article-label">★ 成文（由本次研究提炼，可单独保存导出）' +
+    var isOpen = (g === lastIdx);
 
-                '<span class="rc-toggle" onclick="toggleResearchItem(\'' + aid + '\')">收起▾</span>' +
+    var gid = 'rcG' + g;
 
-                '<span class="rc-btnbar"><button onclick="saveArticleToHistory(\'' + aid + '\')">存成文到历史</button>' +
+    if (grp.isWen && grp.answers.length) {
 
-                '<button onclick="exportArticleWord(\'' + aid + '\')">导出成文Word</button>' +
+      // 提炼成文：醒目金卡，自动展开，可折叠
 
-                '<button onclick="copyArticle(\'' + aid + '\')">复制成文</button></span></div>' +
+      var content = grp.answers[0];
 
-                '<div class="rc-text">' + mdToHtml(m.content) + '</div></div>';
+      window._rcArticles[gid] = content;
 
-      } else {
+      html += '<div class="rc-round' + (isOpen ? '' : ' collapsed') + '" id="' + gid + '">' +
 
-        html += '<div class="rc-item rc-ai collapsed" id="' + aid + '">' +
+              '<div class="rc-round-head" onclick="toggleRound(\'' + gid + '\')">' +
 
-                '<div class="rc-label">答 ' + rIdx +
+              '<span class="rc-q"><span class="rc-num">★ 成文</span> 由本次研究提炼' + escapeHtml(grp.q.replace(/^【提炼成文】/, '')) + '</span>' +
 
-                '<span class="rc-toggle" title="点击展开/收起本段内容" onclick="toggleResearchItem(\'' + aid + '\')">展开▸</span></div>' +
+              '<span class="rc-arrow">' + (isOpen ? '收起▴' : '展开▾') + '</span></div>' +
 
-                '<div class="rc-text">' + mdToHtml(m.content) + '</div></div>';
+              '<div class="rc-round-body"><div class="rc-article-body">' + mdToHtml(content) + '</div>' +
 
-      }
+              '<div class="rc-btnbar" style="margin:10px 0">' +
+
+              '<button onclick="saveArticleToHistory(\'' + gid + '\')">存成文到历史</button>' +
+
+              '<button onclick="exportArticleWord(\'' + gid + '\')">导出成文Word</button>' +
+
+              '<button onclick="copyArticle(\'' + gid + '\')">复制成文</button></div></div></div>';
+
+    } else if (grp.isCmd) {
+
+      // 其他指令（继续展开/补充旁证/纠正表述）：可折叠卷
+
+      html += '<div class="rc-round' + (isOpen ? '' : ' collapsed') + '" id="' + gid + '">' +
+
+              '<div class="rc-round-head" onclick="toggleRound(\'' + gid + '\')">' +
+
+              '<span class="rc-q"><span class="rc-num">' + escapeHtml(grp.q) + '</span></span>' +
+
+              '<span class="rc-arrow">' + (isOpen ? '收起▴' : '展开▾') + '</span></div>' +
+
+              '<div class="rc-round-body">';
+
+      for (var a = 0; a < grp.answers.length; a++) html += '<div class="rc-text">' + mdToHtml(grp.answers[a]) + '</div>';
+
+      html += '</div></div>';
+
+    } else {
+
+      // 普通研究轮：标题=问题，卷内含证据概览+回答
+
+      html += '<div class="rc-round' + (isOpen ? '' : ' collapsed') + '" id="' + gid + '">' +
+
+              '<div class="rc-round-head" onclick="toggleRound(\'' + gid + '\')">' +
+
+              '<span class="rc-q"><span class="rc-num">第' + (g + 1) + '问</span> ' + escapeHtml(truncateQ(grp.q)) + '</span>' +
+
+              '<span class="rc-arrow">' + (isOpen ? '收起▴' : '展开▾') + '</span></div>' +
+
+              '<div class="rc-round-body">' +
+
+              '<div class="rc-user-q">问，' + escapeHtml(grp.q) + '</div>';
+
+      if (grp.ov && grp.ov.length) html += renderEvidenceOverview(grp.ov);
+
+      for (var a2 = 0; a2 < grp.answers.length; a2++) html += '<div class="rc-text">' + mdToHtml(grp.answers[a2]) + '</div>';
+
+      html += '</div></div>';
 
     }
 
@@ -4708,9 +4772,31 @@ function renderResearchChat(apiKey) {
 
   document.getElementById('result').innerHTML = html;
 
-  document.getElementById('status').textContent = '研究已全部生成完成，可继续追问，或对已有结果执行提炼成文、继续展开、补充旁证等操作。';
+  document.getElementById('status').textContent = '研究已全部生成完成，历史各轮已自动卷起，点卷面标题可随时展开回看。';
 
   scrollToResearchTop();
+
+}
+
+function truncateQ(q) {
+
+  q = (q || '').replace(/^\s+/, '');
+
+  return q.length > 32 ? q.substring(0, 32) + '…' : q;
+
+}
+
+function toggleRound(id) {
+
+  var el = document.getElementById(id);
+
+  if (!el) return;
+
+  el.classList.toggle('collapsed');
+
+  var arr = el.querySelector('.rc-arrow');
+
+  if (arr) arr.textContent = el.classList.contains('collapsed') ? '展开▾' : '收起▴';
 
 }
 
