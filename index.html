@@ -1476,8 +1476,8 @@ function callDeepSeekFront(apiKey, system, user) {
         messages: messages,
 
         temperature: _r.isKimi ? 1 : 0.7,
-
-        max_tokens: 8192,
+        thinking: _r.isKimi ? { type: 'disabled' } : undefined,
+        max_tokens: _r.isKimi ? 16384 : 8192,
 
         stream: false
 
@@ -3775,7 +3775,7 @@ function callDeepSeekThread(apiKey, messages) {
 
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _r.key },
 
-      body: JSON.stringify({ model: _r.model, messages: msgs, temperature: _r.isKimi ? 1 : 0.7, max_tokens: 8192, stream: false })
+      body: JSON.stringify({ model: _r.model, messages: msgs, temperature: _r.isKimi ? 1 : 0.7, thinking: _r.isKimi ? { type: 'disabled' } : undefined, max_tokens: _r.isKimi ? 16384 : 8192, stream: false })
 
     }).then(function(resp){
 
@@ -4193,7 +4193,7 @@ function callDeepSeekThread(apiKey, messages) {
 
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _r.key },
 
-      body: JSON.stringify({ model: _r.model, messages: msgs, temperature: _r.isKimi ? 1 : 0.7, max_tokens: 8192, stream: false })
+      body: JSON.stringify({ model: _r.model, messages: msgs, temperature: _r.isKimi ? 1 : 0.7, thinking: _r.isKimi ? { type: 'disabled' } : undefined, max_tokens: _r.isKimi ? 16384 : 8192, stream: false })
 
     }).then(function(resp){
 
