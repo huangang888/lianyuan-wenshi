@@ -491,12 +491,28 @@ let lastSummaryPlain = '';
 // ===== API Key / 历史 存储键 =====
 
 var LS_KEY = 'lianyuan_wenshi_ai_key';
+var LS_KIMI_KEY = 'lianyuan_wenshi_kimi_key';
+var LS_MODEL = 'lianyuan_wenshi_ai_model';
 
 var LS_HISTORY = 'lianyuan_wenshi_history';
 
 function getApiKey(){ try { return localStorage.getItem(LS_KEY) || ''; } catch(e){ return ''; } }
 
 function setApiKey(k){ try { localStorage.setItem(LS_KEY, k); } catch(e){} }
+function getKimiKey(){ try { return localStorage.getItem(LS_KIMI_KEY) || ''; } catch(e){ return ''; } }
+function setKimiKey(k){ try { localStorage.setItem(LS_KIMI_KEY, k); } catch(e){} }
+function getModelSel(){ try { return localStorage.getItem(LS_MODEL) || 'deepseek'; } catch(e){ return 'deepseek'; } }
+function setModelSel(m){ try { localStorage.setItem(LS_MODEL, m); } catch(e){} }
+function getActiveKey(){ return getModelSel() === 'kimi' ? getKimiKey() : getApiKey(); }
+function dsRoute(apiKey){
+  var isKimi = getModelSel() === 'kimi';
+  return {
+    isKimi: isKimi,
+    url: isKimi ? 'https://api.moonshot.cn/v1/chat/completions' : 'https://api.deepseek.com/chat/completions',
+    model: isKimi ? 'kimi-k2.6' : 'deepseek-v4-pro',
+    key: isKimi ? (getKimiKey() || apiKey) : apiKey
+  };
+}
 
 
 
@@ -1418,7 +1434,8 @@ function buildPromptFront(kw, results) {
 
 function callDeepSeekFront(apiKey, system, user) {
 
-  const url = 'https://api.deepseek.com/chat/completions';
+  const _r = dsRoute(apiKey);
+  const url = _r.url;
 
   const messages = [
 
@@ -1438,11 +1455,11 @@ function callDeepSeekFront(apiKey, system, user) {
 
       method: 'POST',
 
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _r.key },
 
       body: JSON.stringify({
 
-        model: 'deepseek-v4-pro',
+        model: _r.model,
 
         messages: messages,
 
@@ -1538,13 +1555,13 @@ async function aiWrite() { await ensureData();
 
   if (!kw) { alert('请输入人名或地名'); return; }
 
-  const apiKey = getApiKey();
+  const apiKey = getActiveKey();
 
   if (!apiKey) {
 
     document.getElementById('result').innerHTML =
 
-      '<div class="ai-err">首次使用请先设置 DeepSeek API Key。<br>' +
+      '<div class="ai-err">首次使用请先在上方“API设置”里选好模型并填入对应密钥。<br>' +
 
       '<input id="setKeyInput" type="password" placeholder="sk-..." ' +
 
@@ -1552,7 +1569,7 @@ async function aiWrite() { await ensureData();
 
       '<br><button onclick="saveKeyAndWrite()" style="padding:10px 28px;background:#1F4E78;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:15px">保存并生成</button>' +
 
-      '<br><div style="margin-top:14px;font-size:13px;color:#999">Key 仅保存在本浏览器，用于调用 DeepSeek 生成文章。</div></div>';
+      '<br><div style="margin-top:14px;font-size:13px;color:#999">密钥仅保存在本浏览器。</div></div>';
 
     document.getElementById('status').textContent = '请先设置 API Key';
 
@@ -1588,7 +1605,7 @@ function saveKeyAndWrite() {
 
   const kw = document.getElementById('kw').value.trim();
 
-  if (kw) doAiWrite(kw, k);
+  if (kw) doAiWrite(kw, getActiveKey());
 
 }
 
@@ -2259,68 +2276,54 @@ function exportHistory(id) {
 // ===== 设置 API Key =====
 
 function openSettings() {
-
   const cur = getApiKey();
-
-  const masked = cur ? cur.substring(0, 6) + '…' + cur.substring(cur.length - 4) : '（未设置）';
-
+  const curK = getKimiKey();
+  const mask = function(k){ return k ? k.substring(0,6)+'…'+k.substring(k.length-4) : '（未设置）'; };
+  const mSel = getModelSel();
   document.getElementById('result').innerHTML =
-
-    '<div class="combine-view"><h2 style="color:#1F4E78">API Key 设置</h2>' +
-
-    '<div class="subtitle">当前：' + escapeHtml(masked) + '</div>' +
-
-    '<p style="margin:12px 0">请输入 DeepSeek API Key（sk-开头）。Key 仅保存在本浏览器本地，用于调用 DeepSeek 生成综述文章。</p>' +
-
-    '<input id="setKeyInput2" type="password" placeholder="sk-..." ' +
-
-    'style="width:100%;max-width:460px;padding:12px;font-size:16px;border:1px solid #c9b98a;border-radius:6px">' +
-
+    '<div class="combine-view"><h2 style="color:#1F4E78">API 设置</h2>' +
+    '<p style="margin:12px 0"><b>选择写作模型</b>（Key 仅保存在本浏览器本地）</p>' +
+    '<select id="modelSel" onchange="previewModelSel()" style="width:100%;max-width:460px;padding:12px;font-size:16px;border:1px solid #c9b98a;border-radius:6px">' +
+    '<option value="deepseek"' + (mSel==='deepseek'?' selected':'') + '>DeepSeek V4 Pro（长文写作稳）</option>' +
+    '<option value="kimi"' + (mSel==='kimi'?' selected':'') + '>Kimi K2.6（上下文理解更深）</option>' +
+    '</select>' +
+    '<div id="dsKeyBlock" style="margin-top:14px">' +
+    '<div style="margin-bottom:6px">DeepSeek API Key，当前 ' + escapeHtml(mask(cur)) + '</div>' +
+    '<input id="setKeyInput2" type="password" placeholder="sk-..." style="width:100%;max-width:460px;padding:12px;font-size:16px;border:1px solid #c9b98a;border-radius:6px">' +
+    '</div>' +
+    '<div id="kimiKeyBlock" style="margin-top:14px;display:' + (mSel==='kimi'?'block':'none') + '">' +
+    '<div style="margin-bottom:6px">Kimi（月之暗面）API Key，当前 ' + escapeHtml(mask(curK)) + '</div>' +
+    '<input id="setKimiInput" type="password" placeholder="sk-..." style="width:100%;max-width:460px;padding:12px;font-size:16px;border:1px solid #c9b98a;border-radius:6px">' +
+    '</div>' +
     '<div style="margin-top:14px;display:flex;gap:10px">' +
-
     '<button onclick="saveKeyFromSettings()" style="padding:10px 28px;background:#1F4E78;color:#fff;border:none;border-radius:6px;cursor:pointer">保存</button>' +
-
     '<button onclick="clearKeyFromSettings()" style="padding:10px 20px;background:#aaa;color:#fff;border:none;border-radius:6px;cursor:pointer">清除</button>' +
-
     '</div></div>';
-
-  document.getElementById('status').textContent = 'API Key 设置';
-
+  document.getElementById('status').textContent = 'API 设置';
 }
-
-
-
+function previewModelSel(){
+  const m = document.getElementById('modelSel').value;
+  document.getElementById('dsKeyBlock').style.display = (m==='kimi') ? 'none' : 'block';
+  document.getElementById('kimiKeyBlock').style.display = (m==='kimi') ? 'block' : 'none';
+}
 function saveKeyFromSettings() {
-
-  const inp = document.getElementById('setKeyInput2');
-
-  const k = inp ? inp.value.trim() : '';
-
-  if (!k) { alert('请输入 API Key'); return; }
-
-  setApiKey(k);
-
-  alert('已保存。');
-
+  const m = document.getElementById('modelSel').value;
+  setModelSel(m);
+  const d = document.getElementById('setKeyInput2');
+  if (d && d.value.trim()) setApiKey(d.value.trim());
+  const k = document.getElementById('setKimiInput');
+  if (k && k.value.trim()) setKimiKey(k.value.trim());
+  const ok = (m==='kimi') ? getKimiKey() : getApiKey();
+  if (!ok) { alert('当前模型尚未填入密钥，请补填后再保存'); return; }
+  alert('已保存，当前使用 ' + (m==='kimi'?'Kimi K2.6':'DeepSeek V4 Pro') + '。');
   openSettings();
-
 }
-
-
-
 function clearKeyFromSettings() {
-
   if (!confirm('确定清除已保存的 API Key？')) return;
-
-  setApiKey('');
-
+  setApiKey(''); setKimiKey('');
   alert('已清除。');
-
   openSettings();
-
 }
-
-
 
 // 数据初始化（放在脚本末尾，确保 BOOK_META 等已定义）
 
@@ -2860,13 +2863,13 @@ async function topicWrite(topicId) { await ensureData();
 
   if (!topic) return;
 
-  var apiKey = getApiKey();
+  var apiKey = getActiveKey();
 
   if (!apiKey) {
 
     openSettings();
 
-    document.getElementById('status').textContent = '请先设置 DeepSeek API Key 再生成专题综述。';
+    document.getElementById('status').textContent = '请先在API设置里选好模型并填入对应密钥。';
 
     return;
 
@@ -3548,13 +3551,13 @@ async function aiResearch() { await ensureData();
 
   if (!question) { alert('请输入要研究的问题，如：钱钟书在涟源时坐在哪里？'); return; }
 
-  var apiKey = getApiKey();
+  var apiKey = getActiveKey();
 
   if (!apiKey) {
 
     document.getElementById('result').innerHTML =
 
-      '<div class="ai-err">首次使用请先设置 DeepSeek API Key。<br>' +
+      '<div class="ai-err">首次使用请先在上方“API设置”里选好模型并填入对应密钥。<br>' +
 
       '<input id="setKeyInput2" type="password" placeholder="sk-..." ' +
 
@@ -3562,7 +3565,7 @@ async function aiResearch() { await ensureData();
 
       '<br><button onclick="saveKeyAndResearch()" style="padding:10px 28px;background:#1F4E78;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:15px">保存并研究</button>' +
 
-      '<br><div style="margin-top:14px;font-size:13px;color:#999">Key 仅保存在本浏览器，用于调用 DeepSeek 分析。</div></div>';
+      '<br><div style="margin-top:14px;font-size:13px;color:#999">密钥仅保存在本浏览器。</div></div>';
 
     document.getElementById('status').textContent = '请先设置 API Key';
 
@@ -3728,7 +3731,8 @@ var researchThread = null;
 
 function callDeepSeekThread(apiKey, messages) {
 
-  const url = 'https://api.deepseek.com/chat/completions';
+  const _r = dsRoute(apiKey);
+  const url = _r.url;
 
   const msgs = messages.map(function(m){ return { role: m.role, content: m.content }; });
 
@@ -3744,9 +3748,9 @@ function callDeepSeekThread(apiKey, messages) {
 
       method: 'POST',
 
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _r.key },
 
-      body: JSON.stringify({ model: 'deepseek-v4-pro', messages: msgs, temperature: 0.7, max_tokens: 8192, stream: false })
+      body: JSON.stringify({ model: _r.model, messages: msgs, temperature: 0.7, max_tokens: 8192, stream: false })
 
     }).then(function(resp){
 
@@ -4014,7 +4018,7 @@ async function researchFollowUp() { await ensureData();
 
   if (!q) { alert('请输入要继续追问的问题'); return; }
 
-  var apiKey = window._rApiKey || getApiKey();
+  var apiKey = window._rApiKey || getActiveKey();
 
   if (!apiKey) { openSettings(); document.getElementById('status').textContent = '请先设置 API Key。'; return; }
 
@@ -4144,7 +4148,8 @@ var researchThread = null;
 
 function callDeepSeekThread(apiKey, messages) {
 
-  const url = 'https://api.deepseek.com/chat/completions';
+  const _r = dsRoute(apiKey);
+  const url = _r.url;
 
   const msgs = messages.map(function(m){ return { role: m.role, content: m.content }; });
 
@@ -4160,9 +4165,9 @@ function callDeepSeekThread(apiKey, messages) {
 
       method: 'POST',
 
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _r.key },
 
-      body: JSON.stringify({ model: 'deepseek-v4-pro', messages: msgs, temperature: 0.7, max_tokens: 8192, stream: false })
+      body: JSON.stringify({ model: _r.model, messages: msgs, temperature: 0.7, max_tokens: 8192, stream: false })
 
     }).then(function(resp){
 
@@ -4700,7 +4705,7 @@ async function researchFollowUp() { await ensureData();
 
   if (!q) { alert('请输入要继续追问的问题'); return; }
 
-  var apiKey = window._rApiKey || getApiKey();
+  var apiKey = window._rApiKey || getActiveKey();
 
   if (!apiKey) { openSettings(); document.getElementById('status').textContent = '请先设置 API Key。'; return; }
 
