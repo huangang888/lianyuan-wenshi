@@ -374,6 +374,18 @@
 
 .rc-item.rc-ai.collapsed .rc-text{display:none}
 
+.rc-item.rc-article{background:linear-gradient(180deg,#fffdf5,#fff);border:2px solid #b8860b;border-left:6px solid #b8860b;box-shadow:0 2px 8px rgba(184,134,11,.15)}
+
+.rc-article-label{color:#8a6d1a;font-weight:700;font-size:14px}
+
+.rc-btnbar{margin-left:10px}
+
+.rc-btnbar button{padding:2px 10px;font-size:12px;margin-right:6px;background:#1F4E78;color:#fff;border:none;border-radius:4px;cursor:pointer}
+
+.hint-link{color:#1F4E78;cursor:pointer;text-decoration:underline;font-weight:700}
+
+.hint-link:hover{color:#b8860b}
+
 
 .cite-bar{margin:14px 0;text-align:center;}.cite-bar button{margin:0 6px;padding:6px 14px;background:#0a1a3a;color:#d4af37;border:1px solid #d4af37;border-radius:4px;cursor:pointer;}
 </style>
@@ -410,7 +422,7 @@
 
   </div>
 
-  <div class="hint">输入人名、地名或历史时期，点<b>「AI成文」</b>由AI通读各书后按时间、事件脉络写成完整文章。示例：<b>蓝田</b>、<b>桥头河</b>、<b>龙山</b>、<b>李燮和</b>、<b>罗辀重</b>、<b>国立师范学院</b></div>
+  <div class="hint" id="hintBar">输入人名、地名或历史时期，点<b>「AI成文」</b>由AI通读各书后按时间、事件脉络写成完整文章。示例：<b>蓝田</b>、<b>桥头河</b>、<b>龙山</b>、<b>李燮和</b>、<b>罗辀重</b>、<b>国立师范学院</b></div>
 
   <div class="tabs">
 
@@ -1550,6 +1562,8 @@ function addHistoryFront(rec) {
 // ===== AI 成文 =====
 
 async function aiWrite() { await ensureData();
+
+  setHintWrite();
 
   const kw = document.getElementById('kw').value.trim();
 
@@ -3543,9 +3557,19 @@ function buildResearchPrompt(question, keywords, evidence, noEvidence) {
 
 
 
+// ===== 页签提示 =====
+var HINT_WRITE = '输入人名、地名或历史时期，点<b>「AI成文」</b>由AI通读各书后按时间、事件脉络写成完整文章。示例：<b class="hint-link" onclick="fillKw(\'蓝田\')">蓝田</b>、<b class="hint-link" onclick="fillKw(\'桥头河\')">桥头河</b>、<b class="hint-link" onclick="fillKw(\'龙山\')">龙山</b>、<b class="hint-link" onclick="fillKw(\'李燮和\')">李燮和</b>、<b class="hint-link" onclick="fillKw(\'罗辀重\')">罗辀重</b>、<b class="hint-link" onclick="fillKw(\'国立师范学院\')">国立师范学院</b>';
+var HINT_RESEARCH = '<b>AI研究能帮您做什么。</b>输入一个问题，AI先全库检索49本史料、找出原文证据，再综合分析作答，逐条注明出处。答完后可继续追问深化，也可一键执行<b>提炼成文</b>、<b>继续展开</b>、<b>补充旁证</b>、<b>纠正表述</b>。试试这些问题，点击即可研究。<span class="hint-link" onclick="researchExample(\'钱钟书在国立师范学院时住在哪\')">钱钟书在国立师范学院时住在哪</span>、<span class="hint-link" onclick="researchExample(\'蓝田镇抗战时期的商业情况\')">蓝田镇抗战时期的商业情况</span>、<span class="hint-link" onclick="researchExample(\'李续宾的家世与战功\')">李续宾的家世与战功</span>、<span class="hint-link" onclick="researchExample(\'龙山药王文化的源流\')">龙山药王文化的源流</span>';
+function fillKw(v){ document.getElementById('kw').value=v; }
+function researchExample(q){ document.getElementById('kw').value=q; aiResearch(); }
+function setHintWrite(){ var h=document.getElementById('hintBar'); if(h) h.innerHTML=HINT_WRITE; }
+function setHintResearch(){ var h=document.getElementById('hintBar'); if(h) h.innerHTML=HINT_RESEARCH; }
+
 // AI 研究入口
 
 async function aiResearch() { await ensureData();
+
+  setHintResearch();
 
   var question = document.getElementById('kw').value.trim();
 
@@ -4575,6 +4599,8 @@ function renderResearchChat(apiKey) {
 
   window._rApiKey = apiKey;
 
+  window._rcArticles = {};
+
   var html = '<div class="research-head" id="researchTop">' +
 
              '<h3>AI 研究结果</h3>' +
@@ -4617,15 +4643,41 @@ function renderResearchChat(apiKey) {
 
     } else if (m.role === 'assistant') {
 
+      var prevQ = (i > 0 && researchThread.messages[i-1].role === 'user' && researchThread.messages[i-1].question) ? researchThread.messages[i-1].question : '';
+
+      var isWen = /^【提炼成文】/.test(prevQ);
+
       var aid = 'rcA' + rIdx;
 
-      html += '<div class="rc-item rc-ai collapsed" id="' + aid + '">' +
+      if (isWen) {
 
-              '<div class="rc-label">答 ' + rIdx +
+        window._rcArticles[aid] = m.content;
 
-              '<span class="rc-toggle" title="点击展开/收起本段内容" onclick="toggleResearchItem(\'' + aid + '\')">展开▸</span></div>' +
+        html += '<div class="rc-item rc-ai rc-article" id="' + aid + '">' +
 
-              '<div class="rc-text">' + mdToHtml(m.content) + '</div></div>';
+                '<div class="rc-label rc-article-label">★ 成文（由本次研究提炼，可单独保存导出）' +
+
+                '<span class="rc-toggle" onclick="toggleResearchItem(\'' + aid + '\')">收起▾</span>' +
+
+                '<span class="rc-btnbar"><button onclick="saveArticleToHistory(\'' + aid + '\')">存成文到历史</button>' +
+
+                '<button onclick="exportArticleWord(\'' + aid + '\')">导出成文Word</button>' +
+
+                '<button onclick="copyArticle(\'' + aid + '\')">复制成文</button></span></div>' +
+
+                '<div class="rc-text">' + mdToHtml(m.content) + '</div></div>';
+
+      } else {
+
+        html += '<div class="rc-item rc-ai collapsed" id="' + aid + '">' +
+
+                '<div class="rc-label">答 ' + rIdx +
+
+                '<span class="rc-toggle" title="点击展开/收起本段内容" onclick="toggleResearchItem(\'' + aid + '\')">展开▸</span></div>' +
+
+                '<div class="rc-text">' + mdToHtml(m.content) + '</div></div>';
+
+      }
 
     }
 
@@ -4767,11 +4819,25 @@ async function researchFollowUp() { await ensureData();
 
 
 
+function findArticleMessages() {
+
+  var arts = [];
+
+  for (var i = 1; i < researchThread.messages.length; i++) {
+
+    var m = researchThread.messages[i];
+
+    if (m.role === 'assistant' && researchThread.messages[i-1].role === 'user' && researchThread.messages[i-1].question && /^【提炼成文】/.test(researchThread.messages[i-1].question)) arts.push(m.content);
+
+  }
+
+  return arts;
+
+}
+
 function saveResearchToHistory() {
 
   if (!researchThread || !researchThread.messages.length) { alert('暂无可保存的研究'); return; }
-
-  var article = buildResearchArticle();
 
   var total = 0;
 
@@ -4785,15 +4851,57 @@ function saveResearchToHistory() {
 
   var rounds = researchThread.messages.filter(function(m){ return m.role === 'user' && m.question; }).length;
 
+  var arts = findArticleMessages();
+
+  if (arts.length) {
+
+    for (var k = 0; k < arts.length; k++) addHistoryFront({ kw: researchThread.firstQuestion + '（提炼成文' + (arts.length>1?'之'+(k+1):'') + '）', total: total, book_count: rounds, books: [], article: arts[k] });
+
+  }
+
+  var article = buildResearchArticle();
+
   addHistoryFront({ kw: researchThread.firstQuestion + '（AI研究）', total: total, book_count: rounds, books: [], article: article });
 
   lastSummaryPlain = '【' + researchThread.firstQuestion + '】AI研究对话\n\n' + article;
 
-  alert('已保存到历史记录，可在「历史记录」中回看或导出Word。');
+  alert('已保存到历史记录。' + (arts.length ? '成文与完整研究对话各存了一条。' : ''));
 
 }
 
+function saveArticleToHistory(aid) {
 
+  var t = window._rcArticles && window._rcArticles[aid];
+
+  if (!t) { alert('未找到该成文内容'); return; }
+
+  addHistoryFront({ kw: researchThread.firstQuestion + '（提炼成文）', total: 0, book_count: 0, books: [], article: t });
+
+  alert('成文已单独存入历史记录，可在「历史记录」中回看或导出Word。');
+
+}
+
+function exportArticleWord(aid) {
+
+  var t = window._rcArticles && window._rcArticles[aid];
+
+  if (!t) { alert('未找到该成文内容'); return; }
+
+  ensureDocxLib(function(){ buildDocxAndDownload({ kw: researchThread.firstQuestion + '提炼成文', article: t }); });
+
+}
+
+function copyArticle(aid) {
+
+  var t = window._rcArticles && window._rcArticles[aid];
+
+  if (!t) { alert('未找到该成文内容'); return; }
+
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(function(){ alert('已复制成文'); }, function(){ fallbackCopy(t); });
+
+  else fallbackCopy(t);
+
+}
 
 function exportResearchWord() {
 
