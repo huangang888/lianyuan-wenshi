@@ -523,7 +523,7 @@ let lastSummaryPlain = '';
 // ===== API Key / 历史 存储键 =====
 
 var LS_KEY = 'lianyuan_wenshi_ai_key';
-var LS_KIMI_KEY = 'lianyuan_wenshi_kimi_key';
+
 var LS_MODEL = 'lianyuan_wenshi_ai_model';
 
 var LS_HISTORY = 'lianyuan_wenshi_history';
@@ -531,18 +531,16 @@ var LS_HISTORY = 'lianyuan_wenshi_history';
 function getApiKey(){ try { return localStorage.getItem(LS_KEY) || ''; } catch(e){ return ''; } }
 
 function setApiKey(k){ try { localStorage.setItem(LS_KEY, k); } catch(e){} }
-function getKimiKey(){ try { return localStorage.getItem(LS_KIMI_KEY) || ''; } catch(e){ return ''; } }
-function setKimiKey(k){ try { localStorage.setItem(LS_KIMI_KEY, k); } catch(e){} }
+
+
 function getModelSel(){ try { return localStorage.getItem(LS_MODEL) || 'deepseek'; } catch(e){ return 'deepseek'; } }
 function setModelSel(m){ try { localStorage.setItem(LS_MODEL, m); } catch(e){} }
-function getActiveKey(){ return getModelSel() === 'kimi' ? getKimiKey() : getApiKey(); }
+function getActiveKey(){ return getApiKey(); }
 function dsRoute(apiKey){
-  var isKimi = getModelSel() === 'kimi';
   return {
-    isKimi: isKimi,
-    url: isKimi ? 'https://api.moonshot.cn/v1/chat/completions' : 'https://api.deepseek.com/chat/completions',
-    model: isKimi ? 'kimi-k2.6' : 'deepseek-v4-pro',
-    key: isKimi ? (getKimiKey() || apiKey) : apiKey
+    url: 'https://api.deepseek.com/chat/completions',
+    model: 'deepseek-v4-pro',
+    key: apiKey
   };
 }
 
@@ -1495,9 +1493,9 @@ function callDeepSeekFront(apiKey, system, user) {
 
         messages: messages,
 
-        temperature: _r.isKimi ? 0.6 : 0.7,
-        thinking: _r.isKimi ? { type: 'disabled' } : undefined,
-        max_tokens: _r.isKimi ? 16384 : 8192,
+        temperature: 0.7,
+        thinking: { type: 'disabled' },
+        max_tokens: 8192,
 
         stream: false
 
@@ -2312,7 +2310,6 @@ function exportHistory(id) {
 
 function openSettings() {
   const cur = getApiKey();
-  const curK = getKimiKey();
   const mask = function(k){ return k ? k.substring(0,6)+'…'+k.substring(k.length-4) : '（未设置）'; };
   const mSel = getModelSel();
   document.getElementById('result').innerHTML =
@@ -2320,16 +2317,12 @@ function openSettings() {
     '<p style="margin:12px 0"><b>选择写作模型</b>（Key 仅保存在本浏览器本地）</p>' +
     '<select id="modelSel" onchange="previewModelSel()" style="width:100%;max-width:460px;padding:12px;font-size:16px;border:1px solid #c9b98a;border-radius:6px">' +
     '<option value="deepseek"' + (mSel==='deepseek'?' selected':'') + '>DeepSeek V4 Pro（长文写作稳）</option>' +
-    '<option value="kimi"' + (mSel==='kimi'?' selected':'') + '>Kimi K2.6（上下文理解更深）</option>' +
     '</select>' +
     '<div id="dsKeyBlock" style="margin-top:14px">' +
     '<div style="margin-bottom:6px">DeepSeek API Key，当前 ' + escapeHtml(mask(cur)) + '</div>' +
     '<input id="setKeyInput2" type="password" placeholder="sk-..." style="width:100%;max-width:460px;padding:12px;font-size:16px;border:1px solid #c9b98a;border-radius:6px">' +
     '</div>' +
-    '<div id="kimiKeyBlock" style="margin-top:14px;display:' + (mSel==='kimi'?'block':'none') + '">' +
-    '<div style="margin-bottom:6px">Kimi（月之暗面）API Key，当前 ' + escapeHtml(mask(curK)) + '</div>' +
-    '<input id="setKimiInput" type="password" placeholder="sk-..." style="width:100%;max-width:460px;padding:12px;font-size:16px;border:1px solid #c9b98a;border-radius:6px">' +
-    '</div>' +
+    
     '<div style="margin-top:14px;display:flex;gap:10px">' +
     '<button onclick="saveKeyFromSettings()" style="padding:10px 28px;background:#1F4E78;color:#fff;border:none;border-radius:6px;cursor:pointer">保存</button>' +
     '<button onclick="clearKeyFromSettings()" style="padding:10px 20px;background:#aaa;color:#fff;border:none;border-radius:6px;cursor:pointer">清除</button>' +
@@ -2337,25 +2330,21 @@ function openSettings() {
   document.getElementById('status').textContent = 'API 设置';
 }
 function previewModelSel(){
-  const m = document.getElementById('modelSel').value;
-  document.getElementById('dsKeyBlock').style.display = (m==='kimi') ? 'none' : 'block';
-  document.getElementById('kimiKeyBlock').style.display = (m==='kimi') ? 'block' : 'none';
+  document.getElementById('dsKeyBlock').style.display = 'block';
 }
 function saveKeyFromSettings() {
   const m = document.getElementById('modelSel').value;
   setModelSel(m);
   const d = document.getElementById('setKeyInput2');
   if (d && d.value.trim()) setApiKey(d.value.trim());
-  const k = document.getElementById('setKimiInput');
-  if (k && k.value.trim()) setKimiKey(k.value.trim());
-  const ok = (m==='kimi') ? getKimiKey() : getApiKey();
+  const ok = getApiKey();
   if (!ok) { alert('当前模型尚未填入密钥，请补填后再保存'); return; }
-  alert('已保存，当前使用 ' + (m==='kimi'?'Kimi K2.6':'DeepSeek V4 Pro') + '。');
+  alert('已保存，当前使用 DeepSeek V4 Pro。');
   openSettings();
 }
 function clearKeyFromSettings() {
   if (!confirm('确定清除已保存的 API Key？')) return;
-  setApiKey(''); setKimiKey('');
+  setApiKey('');
   alert('已清除。');
   openSettings();
 }
@@ -3795,7 +3784,7 @@ function callDeepSeekThread(apiKey, messages) {
 
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _r.key },
 
-      body: JSON.stringify({ model: _r.model, messages: msgs, temperature: _r.isKimi ? 0.6 : 0.7, thinking: _r.isKimi ? { type: 'disabled' } : undefined, max_tokens: _r.isKimi ? 16384 : 8192, stream: false })
+      body: JSON.stringify({ model: _r.model, messages: msgs, temperature: 0.7, thinking: { type: 'disabled' }, max_tokens: 8192, stream: false })
 
     }).then(function(resp){
 
@@ -4213,7 +4202,7 @@ function callDeepSeekThread(apiKey, messages) {
 
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _r.key },
 
-      body: JSON.stringify({ model: _r.model, messages: msgs, temperature: _r.isKimi ? 0.6 : 0.7, thinking: _r.isKimi ? { type: 'disabled' } : undefined, max_tokens: _r.isKimi ? 16384 : 8192, stream: false })
+      body: JSON.stringify({ model: _r.model, messages: msgs, temperature: 0.7, thinking: { type: 'disabled' }, max_tokens: 8192, stream: false })
 
     }).then(function(resp){
 
