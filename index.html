@@ -482,6 +482,7 @@ let DATA = [];
 // ===== 按需加载机制（改造 2026-09-30）=====
 let __lwLoaded = 0, __lwDone = false, __lwPromise = null;
 const __lwTotal = 50;
+  const __lwDataVer = '20261016';
 function lwSeq(items, conc, fn) {
   let idx = 0;
   const workers = Array.from({ length: Math.min(conc, items.length) }, async function () {
@@ -499,7 +500,7 @@ function loadAllBooks() {
     var items = []; for (var i = 1; i <= __lwTotal; i++) items.push(i);
     await lwSeq(items, 6, async function (i) {
       try {
-        var r = await fetch('data/book_' + i + '.json', { cache: 'force-cache' });
+        var r = await fetch('data/book_' + i + '.json?v=' + __lwDataVer, { cache: 'force-cache' });
         if (!r.ok) return;
         var arr = await r.json();
         if (arr && arr[0]) window.KNOWLEDGE_DATA.push(arr[0]);  // DATA 与 KNOWLEDGE_DATA 同引用
@@ -634,8 +635,8 @@ var BOOK_META = {
   '涟源地方人物传记': { year: '2026', src: '文史资料合辑' },
   '龙山志': { year: '2026', src: '龙山历代诗文辑录（doc整理）' },
   '大沩山古密印寺志': { year: '2008', src: '陶汝鼐、陶之典编纂，梁颂成校点，岳麓书社' },
-  '何以娄底': { year: '2026', src: '娄底市文史研究会出品·谭清风主编' },
-};
+
+  '何以娄底': { year: '2026', src: '娄底市文史研究会出品·谭清风主编' },};
 
 var BOOK_CAT = {
 
